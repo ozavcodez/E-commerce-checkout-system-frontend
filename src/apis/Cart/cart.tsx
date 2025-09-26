@@ -26,6 +26,9 @@ export interface CartResponse {
 export interface AddToCartPayload {
   productId: string;
   quantity?: number;
+  price?: number;
+  productName?: string;
+  imageUrl?: string;
 }
 
 // Get authentication headers
@@ -62,7 +65,7 @@ const getUserIdFromToken = (): string => {
     }
     
     const parsedToken = JSON.parse(tokenData);
-    const userId = parsedToken.userId || parsedToken.user?.id || parsedToken.user?._id;
+    const userId =  parsedToken.user?.id;
     
     if (!userId) {
       throw new Error("User ID not found in token");
@@ -77,7 +80,7 @@ const getUserIdFromToken = (): string => {
 // Fetch user's cart
 export const getUserCart = async (): Promise<CartResponse> => {
   const userId = getUserIdFromToken();  
-  const response = await fetch(`${url}/api/getCart/${userId}`, {
+  const response = await fetch(`${url}/api/get-cart/${userId}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
@@ -88,10 +91,9 @@ export const getUserCart = async (): Promise<CartResponse> => {
   return response.json();
 }
 // Add item to cart
-export const addToCart = async (productId: string, quantity: number = 1): Promise<CartResponse> => {
+export const addToCart = async (payload:AddToCartPayload): Promise<CartResponse> => {
   const userId = getUserIdFromToken();
-  const payload: AddToCartPayload = { productId, quantity }; 
-  const response = await fetch(`${url}/api/addToCart/${userId}`, {
+  const response = await fetch(`${url}/api/cart/add-to-cart`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),

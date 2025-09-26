@@ -2,30 +2,30 @@ let url = import.meta.env.VITE_APP_CHECKOUT_BASE_URL;
 
 // Function to redirect back to login if the user doesn't exist
 const redirectToLogin = () => {
-  window.location.href = '/login';
+    window.location.href = '/login';
 };
 
 
 const getHeaders = async (isFormData = false) => {
-  const tokenData = localStorage.getItem('token');
-  if (!tokenData) {
-    // Don't redirect immediately, throw an error to let the calling function handle it
-    throw new Error("Authorization token is missing. Please log in again.");
-  }
-  const authKey = JSON.parse(tokenData).userAuthToken;
+    const tokenData = localStorage.getItem('token');
+    if (!tokenData) {
+        // Don't redirect immediately, throw an error to let the calling function handle it
+        throw new Error("Authorization token is missing. Please log in again.");
+    }
+    const authKey = JSON.parse(tokenData).token;
 
-  const headers: Record<string, string> = {
-    "Authorization": `Bearer ${authKey}`,
-  };
+    const headers: Record<string, string> = {
+        "Authorization": `Bearer ${authKey}`,
+    };
 
-  if (!isFormData) {
-    headers["Content-Type"] = "application/json";
-  }
+    if (!isFormData) {
+        headers["Content-Type"] = "application/json";
+    }
 
-  return headers;
+    return headers;
 };
 
-interface FetchWithAuthOptions extends RequestInit {}
+interface FetchWithAuthOptions extends RequestInit { }
 
 export const fetchWithAuth = async (
     endpoint: string,
@@ -61,8 +61,8 @@ export const fetchWithAuth = async (
 };
 
 export const getAllProducts = async () => {
-  return fetchWithAuth("/api/getAllProducts");
+    return fetchWithAuth("/api/getAllProducts");
 }
-export const getProductById = async (id:string) => {
-  return fetchWithAuth(`/api/getProductById/${id}`);
+export const getProductById = async (id: string) => {
+    return fetchWithAuth(`/api/getProductById/${id}`);
 }

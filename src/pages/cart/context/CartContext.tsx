@@ -1,12 +1,19 @@
-// contexts/CartContext.tsx
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { addToCart, getUserCart, type CartResponse } from '../../../apis/Cart/cart';
+
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  description: string;
+  image?: string;
+}
 
 interface CartContextType {
   cart: CartResponse | null;
   loading: boolean;
   error: string;
-  addToCart: (productId: string, quantity?: number) => Promise<void>;
+  addToCart: (product: Product, quantity?: number) => Promise<void>;
   refreshCart: () => Promise<void>;
   cartCount: number;
   clearError: () => void;
@@ -41,6 +48,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     } catch (err: any) {
       if (err.message === "SESSION_EXPIRED") {
         setError("Your session has expired. Please login again.");
+      } else if (err.message.includes("User ID not found")) {
+        setError("Please login to access your cart");
       } else {
         setError(err.message || "Failed to load cart");
       }
@@ -50,10 +59,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
-  // Add item to cart
-  const handleAddToCart = async (productId: string, quantity: number = 1) => {
+  // Add item to cart - Enhanced version with product details
+  const handleAddToCart = async (product: Product, quantity: number = 1) => {
     try {
-      const updatedCart = await addToCart(productId, quantity);
+      // Create payload that matches your backend API requirements
+      const payload = {
+        productId: product._id,
+        productName: product.name,
+        price: product.price,
+        quantity: quantity,
+        imageUrl: product.image || "" // Use actual product image if available
+      };
+      
+      const updatedCart = await addToCart(payload);
       setCart(updatedCart);
       setError('');
     } catch (err: any) {
@@ -68,7 +86,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const clearError = () => setError('');
 
-  const cartCount = cart?.items.reduce((total, item) => total + item.quantity, 0) || 0;
+  // Safe cart count calculation
+  const cartCount = cart?.items?.reduce((total, item) => total + (item.quantity || 0), 0) || 0;
 
   useEffect(() => {
     fetchCart();

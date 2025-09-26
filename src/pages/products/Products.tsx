@@ -1,7 +1,6 @@
-// pages/Products.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 import { useCart } from "../cart/context/CartContext";
 import CartIcon from "../cart/components/CartIcon";
 
@@ -10,6 +9,7 @@ interface Product {
   name: string;
   price: number;
   description: string;
+  image?: string;
 }
 
 const Products = () => {
@@ -19,7 +19,7 @@ const Products = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    // Mock products data
+    // Mock products data - corrected to match Product interface
     const dummyProducts: Product[] = [
       {
         _id: "1",
@@ -46,20 +46,20 @@ const Products = () => {
   }, []);
 
   const handleAddToCart = async (product: Product) => {
-    // const toastId = toast.loading(`Adding ${product.name} to cart...`);
+    const toastId = toast.loading(`Adding ${product.name} to cart...`);
     
     try {
-      await addToCart(product._id);
-    //   toast.dismiss(toastId);
-    //   toast.success(`${product.name} added to cart! 🛒`);
+      await addToCart(product, 1);
+      toast.dismiss(toastId);
+      toast.success(`${product.name} added to cart! 🛒`);
     } catch (err: any) {
-    //   toast.dismiss(toastId);
+      toast.dismiss(toastId);
       
       if (err.message.includes("SESSION_EXPIRED") || err.message.includes("login") || err.message.includes("User ID")) {
-        // toast.error("Please login to add items to cart");
+        toast.error("Please login to add items to cart");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // toast.error(err.message || "Failed to add item to cart");
+        toast.error(err.message || "Failed to add item to cart");
       }
     }
   };

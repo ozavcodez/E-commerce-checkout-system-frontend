@@ -18,9 +18,10 @@ const Login = () => {
     setError("");
     try {
       const res = await LoginApi(form);
-      localStorage.setItem("token", JSON.stringify(res));
-      navigate("/products");
+      localStorage.setItem("token", JSON.stringify(res.token));
+      localStorage.setItem("userId", JSON.stringify(res.user.id));
       toast.success("Login successful!") ;
+      navigate("/products");
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
