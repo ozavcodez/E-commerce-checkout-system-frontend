@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import { useCart } from './context/CartContext';
+import { useCart } from '../cart/context/CartContext';
 
 const Cart = () => {
   const { cart, loading, error, refreshCart } = useCart();

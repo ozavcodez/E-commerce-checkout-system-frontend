@@ -24,7 +24,7 @@ const Login = () => {
       navigate("/products");
     } catch (err: any) {
       setError(err.message);
-      toast.error(err.message);
+      toast.error(err.message || "Login failed");
     }
   };
 
